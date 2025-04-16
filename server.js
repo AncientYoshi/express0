@@ -16,6 +16,7 @@ let posts = [
 
 // request all posts
 app.get("/api/posts", (req, res) => {
+  console.log(req.query);
   res.json(posts);
 });
 
