@@ -18,23 +18,24 @@ let posts = [
 app.get("/api/posts", (req, res) => {
   const limit = parseInt(req.query.limit);
   if (limit) {
-    res.json(posts.slice(0, limit));
+    res.status(200).json(posts.slice(0, limit));
   } else {
-    res.json(posts);
+    res.status(200).json(posts);
   }
 });
 
 // request a single post
 app.get("/api/posts/:id", (req, res) => {
   const post = posts.find((p) => p.id === parseInt(req.params.id));
-  if (!post) return res.status(404).send("Post not found");
-  res.json(post);
+  if (!post)
+    return res.status(404).send(`Post not found with id ${req.params.id}`);
+  res.status(200).json(post);
 });
 
 app.get("/api/posts/:id/content", (req, res) => {
   const post = posts.find((p) => p.id === parseInt(req.params.id));
   if (!post) return res.status(404).send("Post not found");
-  res.json(post.content);
+  res.status(200).json(post.content);
 });
 
 app.listen(port, () => {
