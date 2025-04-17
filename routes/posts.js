@@ -32,4 +32,21 @@ router.get("/:id/content", (req, res) => {
   res.status(200).json(post.content);
 });
 
+// create a new post
+router.post("/", (req, res) => {
+  console.log(req.body);
+  if (!req.body.title || !req.body.content) {
+    console.log("Title and content are required.");
+    return res.status(400).json({ message: "Title and content are required." });
+  }
+
+  const newPost = {
+    id: posts.length + 1,
+    title: req.body.title,
+    content: req.body.content,
+  };
+  posts.push(newPost);
+  res.status(201).json(newPost);
+});
+
 export default router;
