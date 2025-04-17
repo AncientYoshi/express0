@@ -1,12 +1,11 @@
-const express = require("express");
-const path = require("path");
-const posts = require("./routes/posts");
-
+import express from "express";
+import path from "path";
+import posts from "./routes/posts.js";
 const app = express();
 const port = process.env.PORT || 5000;
 
 //set up static folder
-app.use(express.static(path.join(__dirname, "public")));
+// app.use(express.static(path.join(__dirname, "public")));
 app.use("/api/posts", posts);
 
 app.listen(port, () => {
