@@ -49,4 +49,20 @@ router.post("/", (req, res) => {
   res.status(201).json(newPost);
 });
 
+// update a post
+router.put("/:id", (req, res) => {
+  const post = posts.find((p) => p.id === parseInt(req.params.id));
+  if (!post)
+    return res.status(404).json(`Post not found with id ${req.params.id}`);
+
+  if (!req.body.title || !req.body.content) {
+    console.log("Title and content are required.");
+    return res.status(400).json({ message: "Title and content are required." });
+  }
+
+  post.title = req.body.title;
+  post.content = req.body.content;
+  res.status(200).json(post);
+});
+
 export default router;
