@@ -65,4 +65,14 @@ router.put("/:id", (req, res) => {
   res.status(200).json(post);
 });
 
+// delete a post
+router.delete("/:id", (req, res) => {
+  const postIndex = posts.findIndex((p) => p.id === parseInt(req.params.id));
+  if (postIndex === -1)
+    return res.status(404).json(`Post not found with id ${req.params.id}`);
+
+  posts.splice(postIndex, 1);
+  res.status(204).json({ message: "Post deleted successfully." });
+});
+
 export default router;
