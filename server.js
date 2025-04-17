@@ -16,8 +16,12 @@ let posts = [
 
 // request all posts
 app.get("/api/posts", (req, res) => {
-  console.log(req.query);
-  res.json(posts);
+  const limit = parseInt(req.query.limit);
+  if (limit) {
+    res.json(posts.slice(0, limit));
+  } else {
+    res.json(posts);
+  }
 });
 
 // request a single post
