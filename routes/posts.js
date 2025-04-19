@@ -9,7 +9,7 @@ let posts = [
 ];
 
 // request all posts
-router.get("/", (req, res) => {
+router.get("/", (req, res, next) => {
   const limit = parseInt(req.query.limit);
   if (limit) {
     res.status(200).json(posts.slice(0, limit));
@@ -19,25 +19,35 @@ router.get("/", (req, res) => {
 });
 
 // request a single post
-router.get("/:id", (req, res) => {
+router.get("/:id", (req, res, next) => {
   const post = posts.find((p) => p.id === parseInt(req.params.id));
-  if (!post)
-    return res.status(404).send(`Post not found with id ${req.params.id}`);
+  if (!post) {
+    const error = new Error(`Post not found with id ${req.params.id}`);
+    error.status = 404;
+    return next(error);
+  }
+  //
   res.status(200).json(post);
+  //
 });
 
-router.get("/:id/content", (req, res) => {
+router.get("/:id/content", (req, res, next) => {
   const post = posts.find((p) => p.id === parseInt(req.params.id));
-  if (!post) return res.status(404).send("Post not found");
+  if (!post) {
+    const error = new Error(`Post not found with id ${req.params.id}`);
+    error.status = 404;
+    return next(error);
+  }
   res.status(200).json(post.content);
 });
 
 // create a new post
-router.post("/", (req, res) => {
+router.post("/", (req, res, next) => {
   console.log(req.body);
   if (!req.body.title || !req.body.content) {
-    console.log("Title and content are required.");
-    return res.status(400).json({ message: "Title and content are required." });
+    const error = new Error("Title and content are required.");
+    error.status = 400;
+    return next(error);
   }
 
   const newPost = {
@@ -50,14 +60,23 @@ router.post("/", (req, res) => {
 });
 
 // update a post
-router.put("/:id", (req, res) => {
+router.put("/:id", (req, res, next) => {
   const post = posts.find((p) => p.id === parseInt(req.params.id));
-  if (!post)
-    return res.status(404).json(`Post not found with id ${req.params.id}`);
+  if (!post) {
+    const error = new Error(`Post not found with id ${req.params.id}`);
+    error.status = 404;
+    return next(error);
+  }
 
   if (!req.body.title || !req.body.content) {
-    console.log("Title and content are required.");
-    return res.status(400).json({ message: "Title and content are required." });
+    const error = new Error("Title and content are required.");
+    error.status = 400;
+    return next(error);
+  }
+  if (req.body.title.length < 5) {
+    const error = new Error("Title must be at least 5 characters long.");
+    error.status = 400;
+    return next(error);
   }
 
   post.title = req.body.title;
@@ -66,24 +85,16 @@ router.put("/:id", (req, res) => {
 });
 
 // delete a post
-router.delete("/:id", (req, res) => {
+router.delete("/:id", (req, res, next) => {
   const postIndex = posts.findIndex((p) => p.id === parseInt(req.params.id));
-  if (postIndex === -1)
-    return res.status(404).json(`Post not found with id ${req.params.id}`);
+  if (postIndex === -1) {
+    const error = new Error(`Post not found with id ${req.params.id}`);
+    error.status = 404;
+    return next(error);
+  }
 
   posts.splice(postIndex, 1);
   res.status(204).json({ message: "Post deleted successfully." });
-});
-
-// Middleware to handle 404 errors
-router.use((req, res) => {
-  res.status(404).json({ message: "Route not found" });
-});
-
-// Middleware to handle 500 errors
-router.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ message: "Internal server error" });
 });
 
 export default router;
