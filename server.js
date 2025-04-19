@@ -3,6 +3,7 @@ import path from "path";
 import posts from "./routes/posts.js";
 import logger from "./middleware/logger.js";
 import errorHandler from "./middleware/error.js";
+import notfound from "./middleware/notfound.js";
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -17,11 +18,9 @@ app.use(express.urlencoded({ extended: false }));
 // Middleware to log requests
 app.use(logger);
 app.use("/api/posts", posts);
-app.use((req, res, next) => {
-  const err = new Error("Not Found");
-  err.status = 404;
-  next(err);
-});
+// Middleware to handle errors
+
+app.use(notfound);
 app.use(errorHandler);
 
 app.listen(port, () => {
